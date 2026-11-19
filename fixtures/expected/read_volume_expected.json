@@ -1,0 +1,46 @@
+{
+  "comment": "Q3 for the sample batches in fixtures/events/, worked out by hand before the code was run. Period and cluster as in sample_expected.json. The sample generator splits a query's bytes evenly over its inputs and gives each input bytes // 100 rows.",
+  "read_volume": [
+    {
+      "catalog_name": "lake",
+      "schema_name": "sales",
+      "table_name": "orders",
+      "queries": 8,
+      "physical_input_bytes": 3500,
+      "physical_input_rows": 35,
+      "queries_without_input_bytes": 0,
+      "queries_without_input_rows": 0
+    },
+    {
+      "catalog_name": "lake",
+      "schema_name": "sales",
+      "table_name": "customers",
+      "queries": 4,
+      "physical_input_bytes": 2450,
+      "physical_input_rows": 24,
+      "queries_without_input_bytes": 0,
+      "queries_without_input_rows": 0
+    },
+    {
+      "catalog_name": "lake",
+      "schema_name": "sales",
+      "table_name": "daily_revenue",
+      "queries": 1,
+      "physical_input_bytes": 1000,
+      "physical_input_rows": 10,
+      "queries_without_input_bytes": 0,
+      "queries_without_input_rows": 0
+    },
+    {
+      "catalog_name": "pg",
+      "schema_name": "sales",
+      "table_name": "orders",
+      "queries": 1,
+      "physical_input_bytes": 450,
+      "physical_input_rows": 4,
+      "queries_without_input_bytes": 0,
+      "queries_without_input_rows": 0
+    }
+  ],
+  "total_physical_input_bytes_in_period": 7400
+}

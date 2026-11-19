@@ -1,0 +1,7 @@
+user_name,team_id,valid_from,valid_to
+alice,analytics,2026-01-01T00:00:00Z,
+bob,analytics,2026-01-01T00:00:00Z,2026-11-03T00:00:00Z
+bob,platform,2026-11-03T00:00:00Z,
+dave,analytics,2026-01-01T00:00:00Z,
+frank,analytics,2026-01-01T00:00:00Z,
+svc_etl,platform,2026-01-01T00:00:00Z,

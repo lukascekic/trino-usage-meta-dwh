@@ -1,0 +1,43 @@
+# Local stand-in for the production stack: Trino + Apache Iceberg.
+#   trino     query engine (same SQL dialect and Iceberg connector as production)
+#   postgres  Iceberg JDBC catalog (stands in for Glue / a metastore)
+#   runner    creates the Meta DWH, loads the sample events, answers the example questions, runs the tests
+# Table data lives on the Trino container's local file system (stands in for S3).
+name: meta-dwh
+
+services:
+  postgres:
+    image: postgres:17.12-alpine
+    environment:
+      POSTGRES_USER: iceberg
+      POSTGRES_PASSWORD: iceberg
+      POSTGRES_DB: iceberg
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U iceberg -d iceberg"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  trino:
+    image: trinodb/trino:484
+    mem_limit: 4g
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./trino/catalog/iceberg.properties:/etc/trino/catalog/iceberg.properties:ro
+
+  runner:
+    build: ./runner
+    depends_on:
+      trino:
+        condition: service_healthy
+    environment:
+      TRINO_HOST: trino
+      TRINO_PORT: "8080"
+    volumes:
+      - ./:/app:ro
+    working_dir: /app
+    command: ["python", "-m", "pipeline", "all"]

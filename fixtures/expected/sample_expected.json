@@ -1,0 +1,40 @@
+{
+  "comment": "Answers for the sample batches in fixtures/events/, worked out by hand before the code was run.",
+  "cluster_id": "demo",
+  "period_start": "2026-11-01T00:00:00Z",
+  "period_end": "2026-11-05T00:00:00Z",
+  "fact_query_rows": 14,
+  "distinct_users": {
+    "lake.sales.orders": 4,
+    "lake.sales.customers": 3,
+    "lake.sales.daily_revenue": 1,
+    "pg.sales.orders": 1
+  },
+  "team_resources": {
+    "analytics": {
+      "query_count": 9,
+      "failed_query_count": 1,
+      "cpu_seconds": 42.5,
+      "physical_input_bytes": 4100,
+      "queries_without_input_bytes": 0,
+      "max_query_peak_memory_bytes": 1000
+    },
+    "platform": {
+      "query_count": 2,
+      "failed_query_count": 0,
+      "cpu_seconds": 28.0,
+      "physical_input_bytes": 2800,
+      "queries_without_input_bytes": 0,
+      "max_query_peak_memory_bytes": 4000
+    },
+    "UNASSIGNED": {
+      "query_count": 1,
+      "failed_query_count": 0,
+      "cpu_seconds": 5.0,
+      "physical_input_bytes": 500,
+      "queries_without_input_bytes": 0,
+      "max_query_peak_memory_bytes": 700
+    }
+  },
+  "total_cpu_seconds_in_period": 75.5
+}

@@ -1,0 +1,61 @@
+=== DEMO ===
+Trino 484, catalog 'iceberg' (Apache Iceberg)
+
+Load log (etl_batch)
+    batch        status     messages new queries already loaded
+    batch-001    SUCCEEDED         4           4              0
+    batch-002    SUCCEEDED         6           5              1
+    batch-003    SUCCEEDED         6           5              1
+
+Q1. Distinct users who queried a table, period [2026-11-01T00:00:00Z, 2026-11-05T00:00:00Z)
+    lake.sales.orders            4
+    lake.sales.customers         3
+    lake.sales.daily_revenue     1
+    pg.sales.orders              1
+
+Q2. Resources consumed by a team, period [2026-11-01T00:00:00Z, 2026-11-05T00:00:00Z)
+    team         queries failed cpu_seconds input_bytes max_peak_memory_bytes
+    analytics          9      1        42.5        4100                  1000
+    platform           2      0        28.0        2800                  4000
+    UNASSIGNED         1      0         5.0         500                   700
+    all teams                          75.5   = 75.5, the CPU seconds of all 12 queries that ended in the period (fact_query)
+
+Q3. Data read per table, period [2026-11-01T00:00:00Z, 2026-11-05T00:00:00Z)
+    table                        queries input_bytes input_rows without_bytes
+    lake.sales.orders                  8        3500         35             0
+    lake.sales.customers               4        2450         24             0
+    lake.sales.daily_revenue           1        1000         10             0
+    pg.sales.orders                    1         450          4             0
+    all tables                                  7400   (the queries themselves report 7400)
+
+Trend: distinct users of lake.sales.orders per day (per-day counts must not be added up)
+    2026-11-01  users=1  queries=1
+    2026-11-02  users=3  queries=3
+    2026-11-03  users=2  queries=2
+    2026-11-04  users=1  queries=1
+
+Trend: CPU seconds of team analytics per day (additive)
+    2026-11-01  cpu_seconds=17.0  queries=2
+    2026-11-02  cpu_seconds=10.0  queries=2
+    2026-11-03  cpu_seconds=5.0  queries=2
+    2026-11-04  cpu_seconds=10.5  queries=3
+
+Model invariants hold (unique keys, no orphan rows, every query attributed to exactly one team)
+
+Table comments, read back from the Iceberg catalog
+    bridge_query_table: Which tables each query touched. Grain: query x table x access type. Holds only what Trino measures per table (bytes and rows read). CPU and memory exist only per query and live in fact_query, so summing them through this table is always wrong.
+    dim_table: Every table that appeared in at least one query. Grain: table. Derived from bridge_query_table, so a table nobody ever queried is not here.
+    dim_team: Teams. Grain: team. Additional metadata, maintained outside Trino (org directory export).
+    etl_batch: Load log. Grain: delivery batch. A batch is loaded again from the start until it is SUCCEEDED.
+    fact_query: One row per completed Trino query (finished or failed). Grain: query. Key: (cluster_id, query_id). The only table with query-level measures (CPU, memory, totals). Sum them from this table or v_query_team alone: after a join to bridge_query_table every query appears once per table, and the sums would be multiplied.
+    user_team_history: Which team each user belonged to, and when. Grain: user x membership interval. Intervals of one user never overlap, so a query maps to at most one team. Additional metadata (org directory export).
+
+Checked 31 values against the answers written down in advance in fixtures/expected/: 31 match
+DEMO PASSED
+
+=== TESTS ===
+........................................................................ [ 32%]
+........................................................................ [ 64%]
+........................................................................ [ 96%]
+.........                                                                [100%]
+225 passed in 398.72s (0:06:38)
